@@ -1,14 +1,18 @@
-from http.client import responses
 
+import pytest
 import requests
-from google.protobuf.unittest_custom_options_pb2 import required_enum_opt
-from orca.speech import reset
 
 
 class TestFirstApi:
-    def test_hello_call(self):
+    names = [
+        ("Slava"),
+        ("Seva"),
+        ("")
+    ]
+
+    @pytest.mark.parametrize('name', names)
+    def test_hello_call(self, name):
         url = "https://playground.learnqa.ru/api/hello"
-        name = "testUser"
         data = {'name': name}
 
         response = requests.get(url, params = data )
@@ -17,6 +21,12 @@ class TestFirstApi:
 
         response_dict = response.json()
         assert "answer" in response_dict, "There is no filed 'answer' in the response"
-        expected_response_text = f"Hello, {name}"
+
+        if len(name) == 0:
+            expected_response_text = "Hello, someone"
+
+        else:
+            expected_response_text  = f"Hello, {name}"
+
         actual_response_text = response_dict["answer"]
         assert expected_response_text == actual_response_text , "actual text in the response is not correct"

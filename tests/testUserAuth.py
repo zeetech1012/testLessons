@@ -1,11 +1,10 @@
 from typing import List
-
 import requests
 import pytest
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 
-class TestUserAuth:
+class TestUserAuth(BaseCase):
     exclude_params = [
         ("no_cookie"),
         ("no_token")
@@ -15,9 +14,8 @@ class TestUserAuth:
         data = {
             'email': 'vinkotov@example.com',
             'password': '1234'
-        }
+            }
         response1 = requests.post("https://playground.learnqa.ru/api/user/login", data=data)
-
 
         self.auth_sid = response1.cookies.get("auth_sid")
         self.token = response1.headers.get("x-csrf-token")
@@ -36,11 +34,6 @@ class TestUserAuth:
             "User id from auth method != to user id from check method"
         )
 
-
-
-
-
-
     @pytest.mark.parametrize('condition', exclude_params)
     def test_negative_auth_check(self, condition):
 
@@ -48,12 +41,12 @@ class TestUserAuth:
             response2 = requests.get(
             "https://playground.learnqa.ru/api/user/auth",
             headers={"x-csrf-token": self.token}
-        )
+            )
         else:
             response2 = requests.get(
             "https://playground.learnqa.ru/api/user/auth",
             cookies={"auth_sid": self.auth_sid}
-        )
+            )
 
         Assertions.assert_json_value_by_name(
             response2,
